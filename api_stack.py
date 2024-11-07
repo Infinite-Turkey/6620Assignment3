@@ -18,9 +18,9 @@ class ApiGatewayStack(Stack):
         plot_integration = LambdaIntegration(plotting_lambda)
         plot_resource.add_method("POST", plot_integration)  
 
-        # 输出完整的 API Gateway URL 和 API ID
+        # Generate API Gateway URL 和 API ID
         self.api_url = f"{api.url}plot"
         self.api_id = api.rest_api_id
 
-        # 导出 API ID，以便在其他 Stack 中使用
+        # Output API ID，which can be used in other Stack
         CfnOutput(self, "PlottingApiId", value=self.api_id)

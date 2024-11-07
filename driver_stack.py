@@ -22,7 +22,7 @@ class DriverLambdaStack(Stack):
 
         s3_bucket.grant_write(self.driver_lambda)
         
-        # 授权 Driver Lambda 调用 API Gateway
+        # Authorize Driver Lambda to invoke API Gateway
         self.driver_lambda.add_to_role_policy(PolicyStatement(
             actions=["execute-api:Invoke"],
             resources=[
