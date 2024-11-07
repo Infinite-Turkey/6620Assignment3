@@ -1,4 +1,3 @@
-# storage_and_tracking_stack.py
 from aws_cdk import Stack, Duration
 from aws_cdk.aws_s3 import Bucket, EventType
 from aws_cdk.aws_s3_notifications import LambdaDestination
@@ -10,17 +9,17 @@ class StorageAndTrackingStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        # 创建 S3 Bucket
+        # Create S3 Bucket
         self.bucket = Bucket(self, "Assignment3Bucket")
 
-        # 创建 DynamoDB 表
+        # Create DynamoDB Table
         self.table = Table(self, "TrackingTable",
             partition_key=Attribute(name="BucketName", type=AttributeType.STRING),
             sort_key=Attribute(name="Timestamp", type=AttributeType.NUMBER),
             billing_mode=BillingMode.PAY_PER_REQUEST
         )
 
-        # 创建 Size Tracking Lambda
+        # Create Size Tracking Lambda
         self.size_tracking_lambda = Function(
             self, "SizeTrackingLambda",
             runtime=Runtime.PYTHON_3_8,
@@ -33,11 +32,11 @@ class StorageAndTrackingStack(Stack):
             }
         )
 
-        # 为 Lambda 授予 S3 和 DynamoDB 的权限
+        # Grant Lambda permissions to access S3 and DynamoDB
         self.bucket.grant_read_write(self.size_tracking_lambda)
         self.table.grant_read_write_data(self.size_tracking_lambda)
 
-        # 添加 S3 Bucket 事件通知，触发 Size Tracking Lambda
+        # Add S3 bucket event notifications to trigger the Size Tracking Lambda
         self.bucket.add_event_notification(
             EventType.OBJECT_CREATED,
             LambdaDestination(self.size_tracking_lambda)
